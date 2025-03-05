@@ -21,10 +21,11 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Features
-<div style="display: flex; gap: 10px;">
+<div style="display: flex; gap: 30px;">
 <img src="./public/1.jpg" alt="Feature 1" width="250" height="600">
 <img src="./public/2.jpg" alt="Feature 2" width="250" height="600">
 </div>
+
 - Add new tasks
 - Edit existing tasks
 - Delete tasks
