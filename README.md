@@ -22,8 +22,8 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Features
 
-<img src="./public/1.jpg" alt="Feature 1" width="300" height="200">
-<img src="./public/2.jpg" alt="Feature 2" width="300" height="200">
+<img src="./public/1.jpg" alt="Feature 1" width="600" height="200">
+<img src="./public/2.jpg" alt="Feature 2" width="600" height="200">
 
 - Add new tasks
 - Edit existing tasks
