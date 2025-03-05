@@ -4,10 +4,12 @@ import { useState, useEffect, ChangeEvent } from "react";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
-import { Trash2, CheckCircle, Edit2, Moon, Sun } from "lucide-react"; // Import Edit, Moon, and Sun icons
+import { Trash2, CheckCircle, Edit2, Moon, Sun, FileText } from "lucide-react"; // Import FileText icon
 import DatePicker from "react-datepicker"; // Import DatePicker
 import "react-datepicker/dist/react-datepicker.css"; // Import DatePicker styles
 import { Dropdown } from "@/components/ui/dropdown"; // Import Dropdown component
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface Task {
   text: string;
@@ -16,6 +18,7 @@ interface Task {
   isEditing?: boolean; // Add isEditing property
   priority: "Low" | "Medium" | "High"; // Add priority property
   recurrence?: "None" | "Daily" | "Weekly" | "Monthly"; // Add recurrence property
+  notified?: boolean; // Add notified property
 }
 
 export default function TodoApp() {
@@ -44,18 +47,22 @@ export default function TodoApp() {
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
-      tasks.forEach((task) => {
-        if (!task.completed) {
+      const newTasks = tasks.map((task) => {
+        if (!task.completed && !task.notified) {
           const timeDiff = task.deadline.getTime() - now.getTime();
           const hoursDiff = timeDiff / (1000 * 3600);
           if (hoursDiff <= 1 && hoursDiff > 0) {
             alert(`Task "${task.text}" is due within an hour!`);
+            return { ...task, notified: true };
           } else if (hoursDiff <= 0) {
             alert(`Task "${task.text}" is overdue!`);
+            return { ...task, notified: true };
           }
         }
+        return task;
       });
-    }, 60000); 
+      setTasks(newTasks);
+    }, 1800000);
 
     return () => clearInterval(interval);
   }, [tasks]);
@@ -154,6 +161,43 @@ export default function TodoApp() {
     return () => clearInterval(interval);
   }, [tasks]);
 
+  const exportTasksToPDF = () => {
+    try {
+      const doc = new jsPDF();
+      
+      console.log("doc initialized", doc); // Debugging
+  
+      const tableColumn = ["Task", "Completed", "Deadline", "Priority", "Recurrence"];
+      const tableRows: any[] = [];
+  
+      tasks.forEach(task => {
+        tableRows.push([
+          task.text,
+          task.completed ? "Yes" : "No",
+          task.deadline ? task.deadline.toLocaleString() : "No Deadline",
+          task.priority,
+          task.recurrence || "None"
+        ]);
+      });
+  
+      console.log("tableRows", tableRows); // Debugging
+  
+      // Ensure autoTable is being called correctly
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 20,
+        styles: { fontSize: 10 }
+      });
+  
+      doc.text("To-Do List", 14, 15);
+      doc.save("todo-list.pdf");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
+  };
+  
+  
   const filteredTasks = tasks.filter((task) => {
     if (filter === "Completed") return task.completed;
     if (filter === "Pending") return !task.completed;
@@ -188,6 +232,7 @@ export default function TodoApp() {
             dateFormat="Pp"
             className={`w-[100%] p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 ${isDarkMode ? "border-gray-600 bg-gray-700 text-white" : "border-gray-300 bg-white text-gray-800"}`}
             placeholderText="Select deadline"
+            popperClassName="custom-datepicker" // Add custom class
           />
           <Dropdown
             value={priority}
@@ -202,7 +247,12 @@ export default function TodoApp() {
             className={`w-[50%] p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 ${isDarkMode ? "border-gray-600 bg-gray-700 text-white" : "border-gray-300 bg-white text-gray-800"}`}
           />
         </div>
-        <Button onClick={addTask} className="bg-blue-500 text-white hover:bg-blue-600 w-full">Add</Button>
+        <div className="flex items-center space-x-2">
+          <Button onClick={addTask} className="bg-blue-500 text-white hover:bg-blue-600 w-full">Add</Button>
+          <Button variant="ghost" onClick={exportTasksToPDF}>
+            <FileText className={`h-6 w-6 ${isDarkMode ? "text-white" : "text-gray-800"}`} />
+          </Button>
+        </div>
         <div className="flex justify-between">
           <span className={`${isDarkMode ? "text-white" : "text-gray-800"}`}>{filteredTasks.length} tasks</span>
           <span className={`${isDarkMode ? "text-white" : "text-gray-800"}`}>{completionPercentage.toFixed(2)}% completed</span>
@@ -228,6 +278,7 @@ export default function TodoApp() {
                     showTimeSelect
                     dateFormat="Pp"
                     className={`w-[100%] p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 ${isDarkMode ? "border-gray-600 bg-gray-700 text-white" : "border-gray-300 bg-white text-gray-800"}`}
+                    popperClassName="custom-datepicker" // Add custom class
                   />
                   <Dropdown
                     value={t.priority}
