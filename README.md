@@ -20,6 +20,23 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Features
+
+![Feature 1](./public/1.jpg)
+![Feature 2](./public/2.jpg)
+
+- Add new tasks
+- Edit existing tasks
+- Delete tasks
+- Mark tasks as completed
+- Filter tasks by status (all, completed, pending)
+- Responsive design
+- Dark mode
+- Set due dates for tasks
+- Export tasks to PDF
+- Set task priority
+- Recurring tasks
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
