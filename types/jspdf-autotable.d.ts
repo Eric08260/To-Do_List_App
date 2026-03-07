@@ -8,7 +8,7 @@ declare module "jspdf-autotable" {
     };
   }
 
-  function autoTable(options: AutoTableOptions): void;
+  function autoTable(doc: any, options: AutoTableOptions): void;
 
   export default autoTable;
 }
